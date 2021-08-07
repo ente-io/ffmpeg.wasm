@@ -1,8 +1,12 @@
 const { defaultArgs, baseOptions } = require('./config');
 const { setLogging, setCustomLogger, log } = require('./utils/log');
 const parseProgress = require('./utils/parseProgress');
-const parseArgs = require('./utils/parseArgs');
-const { defaultOptions, getCreateFFmpegCore } = require('./node');
+const {
+  defaultOptions,
+  getCreateFFmpegCore,
+  getCore: _getCore,
+  ffmpeg: _ffmpeg,
+} = require('./node');
 const { version } = require('../package.json');
 
 const NO_LOAD = Error('ffmpeg.wasm is not ready, make sure you have completed load().');
@@ -12,14 +16,16 @@ module.exports = (_options = {}) => {
     log: logging,
     logger,
     progress: optProgress,
+    mt,
     ...options
   } = {
     ...baseOptions,
     ...defaultOptions,
     ..._options,
   };
+  const getCore = _getCore(mt);
+  const ffmpeg = _ffmpeg(mt);
   let Core = null;
-  let ffmpeg = null;
   let runResolve = null;
   let running = false;
   let progress = optProgress;
@@ -30,7 +36,7 @@ module.exports = (_options = {}) => {
       running = false;
     }
   };
-  const parseMessage = ({ type, message }) => {
+  const parseMessage = (type) => (message) => {
     log(type, message);
     parseProgress(message, progress);
     detectCompletion(message);
@@ -56,19 +62,18 @@ module.exports = (_options = {}) => {
        * is no need to set them.
        */
       const {
-        createFFmpegCore,
         corePath,
         workerPath,
         wasmPath,
       } = await getCreateFFmpegCore(options);
-      Core = await createFFmpegCore({
+      Core = await getCore({
         /*
          * Assign mainScriptUrlOrBlob fixes chrome extension web worker issue
          * as there is no document.currentScript in the context of content_scripts
          */
         mainScriptUrlOrBlob: corePath,
-        printErr: (message) => parseMessage({ type: 'fferr', message }),
-        print: (message) => parseMessage({ type: 'ffout', message }),
+        printErr: parseMessage('fferr'),
+        print: parseMessage('ffout'),
         /*
          * locateFile overrides paths of files that is loaded by main script (ffmpeg-core.js).
          * It is critical for browser environment and we override both wasm and worker paths
@@ -88,7 +93,6 @@ module.exports = (_options = {}) => {
           return prefix + path;
         },
       });
-      ffmpeg = Core.cwrap('proxy_main', 'number', ['number', 'number']);
       log('info', 'ffmpeg-core loaded');
     } else {
       throw Error('ffmpeg.wasm was loaded, you should not load it again, use ffmpeg.isLoaded() to check next time.');
@@ -129,7 +133,7 @@ module.exports = (_options = {}) => {
       return new Promise((resolve) => {
         const args = [...defaultArgs, ..._args].filter((s) => s.length !== 0);
         runResolve = resolve;
-        ffmpeg(...parseArgs(Core, args));
+        ffmpeg({ Core, args });
       });
     }
   };
@@ -184,7 +188,6 @@ module.exports = (_options = {}) => {
         console.log('catch core exit error', e);
       }
       Core = null;
-      ffmpeg = null;
       runResolve = null;
     }
   };

@@ -46,7 +46,7 @@ module.exports = async ({ corePath: _corePath }) => {
       const eventHandler = () => {
         script.removeEventListener('load', eventHandler);
         if (typeof createFFmpegCore === 'undefined') {
-          throw Error(CREATE_FFMPEG_CORE_IS_NOT_DEFINED(coreRemotePath));
+          throw CREATE_FFMPEG_CORE_IS_NOT_DEFINED(coreRemotePath);
         }
         log('info', 'ffmpeg-core.js script loaded');
         resolve({
