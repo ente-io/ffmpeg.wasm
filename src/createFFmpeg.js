@@ -16,13 +16,13 @@ module.exports = (_options = {}) => {
     log: logging,
     logger,
     progress: optProgress,
-    mt,
     ...options
   } = {
     ...baseOptions,
     ...defaultOptions,
     ..._options,
   };
+  const { mt } = options;
   const getCore = _getCore(mt);
   const ffmpeg = _ffmpeg(mt);
   let Core = null;

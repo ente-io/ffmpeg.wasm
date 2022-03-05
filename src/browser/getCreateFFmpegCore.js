@@ -1,9 +1,7 @@
 /* eslint-disable no-undef */
 const resolveURL = require('resolve-url');
 const { log } = require('../utils/log');
-const {
-  CREATE_FFMPEG_CORE_IS_NOT_DEFINED,
-} = require('../utils/errors');
+const { CREATE_FFMPEG_CORE_IS_NOT_DEFINED } = require('../utils/errors');
 
 /*
  * Fetch data from remote URL and convert to blob URL
@@ -37,10 +35,16 @@ module.exports = async ({ corePath: _corePath, mt: _mt }) => {
   // );
   const coreRemotePath = resolveURL(_corePath);
   const corePath = coreRemotePath;
-  const wasmPath = coreRemotePath.replace('ffmpeg-core.js', 'ffmpeg-core.wasm');
+  const wasmPath = coreRemotePath.replace(
+    'ffmpeg-core.js',
+    'ffmpeg-core.wasm',
+  );
   let workerPath = null;
   if (_mt) {
-    workerPath = coreRemotePath.replace('ffmpeg-core.js', 'ffmpeg-core.worker.js');
+    workerPath = coreRemotePath.replace(
+      'ffmpeg-core.js',
+      'ffmpeg-core.worker.js',
+    );
   }
   if (typeof createFFmpegCore === 'undefined') {
     return new Promise((resolve) => {
