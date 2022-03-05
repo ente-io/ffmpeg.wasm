@@ -2,7 +2,7 @@ export const FS: {
     writeFile: (fileName: string, binaryData: Uint8Array) => void,
     readFile: (fileName: string) => Uint8Array,
     unlink: (fileName: string) => void,
-}
+};
 
 type FSMethodNames = { [K in keyof typeof FS]: (typeof FS)[K] extends (...args: any[]) => any ? K : never }[keyof typeof FS];
 type FSMethodArgs = { [K in FSMethodNames]: Parameters<(typeof FS)[K]> };
@@ -16,6 +16,8 @@ export interface CreateFFmpegOptions {
     corePath?: string;
     /** a boolean to turn on all logs, default is false */
     log?: boolean;
+    /** a boolean to specify if the core is single or multi-threaded */
+    mt?:boolean
     /** a function to get log messages, a quick example is ({ message }) => console.log(message) */
     logger?: LogCallback;
     /** a function to trace the progress, a quick example is p => console.log(p) */
