@@ -19,7 +19,7 @@ const {
 //   return blobURL;
 // };
 
-module.exports = async ({ corePath: _corePath }) => {
+module.exports = async ({ corePath: _corePath, mt: _mt }) => {
   if (typeof _corePath !== 'string') {
     throw Error('corePath should be a string!');
   }
@@ -38,8 +38,10 @@ module.exports = async ({ corePath: _corePath }) => {
   const coreRemotePath = resolveURL(_corePath);
   const corePath = coreRemotePath;
   const wasmPath = coreRemotePath.replace('ffmpeg-core.js', 'ffmpeg-core.wasm');
-  const workerPath = coreRemotePath.replace('ffmpeg-core.js', 'ffmpeg-core.worker.js');
-
+  let workerPath = null;
+  if (_mt) {
+    workerPath = coreRemotePath.replace('ffmpeg-core.js', 'ffmpeg-core.worker.js');
+  }
   if (typeof createFFmpegCore === 'undefined') {
     return new Promise((resolve) => {
       const script = document.createElement('script');
