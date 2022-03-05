@@ -185,7 +185,7 @@ module.exports = (_options = {}) => {
       try {
         Core.exit(1);
       } catch (e) {
-        console.log('catch core exit error', e);
+        // console.log('catch core exit error', e);
       }
       Core = null;
       runResolve = null;
