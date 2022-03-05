@@ -8,7 +8,7 @@ const ffmpeg = ({ Core, args }) => (
     'main',
     'number',
     ['number', 'number'],
-    parseArgs(args),
+    parseArgs(Core, args),
   )
 );
 
