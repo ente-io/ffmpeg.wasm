@@ -7,7 +7,7 @@ const getCore = (opts) => (
 
 const ffmpeg = ({ Core, args }) => (
   Core.ccall(
-    'proxy_main',
+    'emscripten_proxy_main',
     'number',
     ['number', 'number'],
     parseArgs(Core, args),
