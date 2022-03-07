@@ -1,5 +1,4 @@
 /* eslint-disable no-undef */
-const resolveURL = require('resolve-url');
 const { log } = require('../utils/log');
 const { CREATE_FFMPEG_CORE_IS_NOT_DEFINED } = require('../utils/errors');
 
@@ -33,7 +32,7 @@ module.exports = async ({ corePath: _corePath, mt: _mt }) => {
   //   coreRemotePath.replace('ffmpeg-core.js', 'ffmpeg-core.worker.js'),
   //   'application/javascript',
   // );
-  const coreRemotePath = resolveURL(_corePath);
+  const coreRemotePath = _corePath;
   const corePath = coreRemotePath;
   const wasmPath = coreRemotePath.replace(
     'ffmpeg-core.js',
