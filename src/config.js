@@ -53,5 +53,6 @@ module.exports = {
      * is not well supported by most of the browsers.
      */
     mt: true,
+    runningInWorker: typeof importScripts === 'function',
   },
 };

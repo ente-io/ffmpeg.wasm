@@ -16,7 +16,7 @@ const { CREATE_FFMPEG_CORE_IS_NOT_DEFINED } = require('../utils/errors');
 //   return blobURL;
 // };
 
-module.exports = async ({ corePath: _corePath, mt: _mt }) => {
+module.exports = async ({ corePath: _corePath, mt: _mt, runningInWorker: _runningInWorker }) => {
   if (typeof _corePath !== 'string') {
     throw Error('corePath should be a string!');
   }
@@ -47,24 +47,28 @@ module.exports = async ({ corePath: _corePath, mt: _mt }) => {
   }
   if (typeof createFFmpegCore === 'undefined') {
     return new Promise((resolve) => {
-      const script = document.createElement('script');
-      const eventHandler = () => {
-        script.removeEventListener('load', eventHandler);
-        if (typeof createFFmpegCore === 'undefined') {
-          throw CREATE_FFMPEG_CORE_IS_NOT_DEFINED(coreRemotePath);
-        }
-        log('info', 'ffmpeg-core.js script loaded');
-        resolve({
-          createFFmpegCore,
-          corePath,
-          wasmPath,
-          workerPath,
-        });
-      };
-      script.src = corePath;
-      script.type = 'text/javascript';
-      script.addEventListener('load', eventHandler);
-      document.getElementsByTagName('head')[0].appendChild(script);
+      if (_runningInWorker) {
+        importScripts(coreRemotePath);
+      } else {
+        const script = document.createElement('script');
+        const eventHandler = () => {
+          script.removeEventListener('load', eventHandler);
+          if (typeof createFFmpegCore === 'undefined') {
+            throw CREATE_FFMPEG_CORE_IS_NOT_DEFINED(coreRemotePath);
+          }
+          log('info', 'ffmpeg-core.js script loaded');
+        };
+        script.src = corePath;
+        script.type = 'text/javascript';
+        script.addEventListener('load', eventHandler);
+        document.getElementsByTagName('head')[0].appendChild(script);
+      }
+      resolve({
+        createFFmpegCore,
+        corePath,
+        wasmPath,
+        workerPath,
+      });
     });
   }
   log('info', 'ffmpeg-core.js script is loaded already');
