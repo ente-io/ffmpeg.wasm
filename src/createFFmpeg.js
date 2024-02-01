@@ -185,10 +185,12 @@ module.exports = (_options = {}) => {
       try {
         Core.exit(1);
       } catch (e) {
-        // console.log('catch core exit error', e);
+        log(e.message);
+      } finally {
+        Core = null;
+        ffmpeg = null;
+        runResolve = null;
       }
-      Core = null;
-      runResolve = null;
     }
   };
 
