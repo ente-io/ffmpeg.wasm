@@ -46,5 +46,13 @@ module.exports = {
      * each environment.
      */
     corePath: '',
+    /*
+     * Whether to use the multi-thread version of ffmpeg.
+     * Most of the time, the multi-thread version is much faster
+     * than single thread, but it requires SharedArrayBuffer which
+     * is not well supported by most of the browsers.
+     */
+    mt: true,
+    runningInWorker: typeof importScripts === 'function',
   },
 };

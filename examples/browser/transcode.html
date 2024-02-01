@@ -26,7 +26,7 @@
 
       const transcode = async ({ target: { files } }) => {
         if (ffmpeg === null) {
-          ffmpeg = createFFmpeg({ log: true });
+          ffmpeg = createFFmpeg({ log: true, corePath: '/ffmpeg-core.js' });
         }
         const message = document.getElementById('message');
         const { name } = files[0];
